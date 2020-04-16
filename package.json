@@ -5,5 +5,17 @@
   "main": "index.js",
   "repository": "https://github.com/IagooCesaar/cursonodebr-nodejsiniciantes.git",
   "author": "Iago César Fernandes Nogueira <iagocesar.sgs@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.0.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.6"
+  },
+  "scripts": {
+    "test": "mocha ./src/tests/*.test.js",
+    "test:watch": "mocha ./src/tests/*.test.js -w"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1"
+  }
 }
