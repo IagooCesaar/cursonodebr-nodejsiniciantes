@@ -1,0 +1,9 @@
+{
+  "name": "nodejs-iniciantes",
+  "version": "1.0.0",
+  "description": "Curso NodeBR",
+  "main": "index.js",
+  "repository": "https://github.com/IagooCesaar/cursonodebr-nodejsiniciantes.git",
+  "author": "Iago César Fernandes Nogueira <iagocesar.sgs@gmail.com>",
+  "license": "MIT"
+}

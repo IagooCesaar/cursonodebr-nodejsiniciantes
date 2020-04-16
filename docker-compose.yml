@@ -1,0 +1,77 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-container
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sysdba
+      POSTGRES_PASSWORD: masterkey
+      POSTGRES_DB: heroes
+      PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+      - backend
+
+  adminer:
+    image: adminer
+    container_name: adminer-container
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    links:
+      - "postgres:postgres"
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo:4
+    container_name: mongo-container
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    #networks:
+    #  - backend
+
+  # mongoclient:
+  #   image: "mongoclient/mongoclient"
+  #   container_name: mongoclient-container
+  #   restart: unless-stopped
+  #   links:
+  #     - "mongodb:mongodb"
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - mongoclientdata:/data/db
+  #   # environment:
+  #   #   - MONGO_URL: mongodb://admin:admin@mongodb:27017/admin
+  #   #   - mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - backend
+
+volumes:
+  mongodata:
+  mongoclientdata:
+
+networks:
+  backend:
+    driver: "bridge"
+    ### Passo a passo:
+## Executar o comando docker-compose up -d
+# -> o comando "up" vai construir as imagens caso precise e rodar os containers
+# -> a flag "-d" (detach) fará os containers rodarem em background sem "tomar conta do terminal" com a
+# saída de informação dos containers
+#
+## Alimentando o banco de dados com o docker exec utilizando um script.sql
+# cmd /c 'docker exec -i mysql-container mysql -uroot -pprogramadorabordo < api/db/script.sql'
+
+## Finalizando os container
+# docker-compose stop
