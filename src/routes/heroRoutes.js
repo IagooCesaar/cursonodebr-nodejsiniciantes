@@ -17,6 +17,10 @@ class HeroRoutes extends BaseRoutes {
       path: "/herois",
       method: "GET",
       config: {
+        tags: ["api"],
+        description: "Deverá listar os heróis cadastrados",
+        notes:
+          "Adotará paginação (padrão 10 itens por página) e filtro opcional por nome (consulta like)",
         validate: {
           /*
            *payload -> body
@@ -66,6 +70,9 @@ class HeroRoutes extends BaseRoutes {
       path: "/herois",
       method: "POST",
       config: {
+        tags: ["api"],
+        description: "Deverá cadastrar um herói no banco de dados",
+        notes: "Deverão ser informados os campos nome e poder",
         validate: {
           failAction,
           payload: {
@@ -92,6 +99,10 @@ class HeroRoutes extends BaseRoutes {
       path: "/herois/{id}",
       method: "PATCH",
       config: {
+        tags: ["api"],
+        description: "Deverá atualizar o cadastrar de um herói pelo seu ID",
+        notes:
+          "Atualizará o cadastro de um herói quando informado um ID válido",
         validate: {
           failAction,
           params: {
@@ -130,6 +141,9 @@ class HeroRoutes extends BaseRoutes {
       path: "/herois/{id}",
       method: "DELETE",
       config: {
+        tags: ["api"],
+        description: "Deverá remover o cadastro de um herói do banco de dados",
+        notes: "Removerá o cadastro de um herói quando informado um ID válido",
         validate: {
           failAction,
           params: {
