@@ -21,6 +21,7 @@ class Postgres extends ICrud {
       },
       logging: false,
     });
+
     return connection;
   }
 
