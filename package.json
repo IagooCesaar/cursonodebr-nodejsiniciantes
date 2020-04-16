@@ -20,15 +20,17 @@
     "mongoose": "^5.9.7",
     "pg": "7.4.3",
     "pg-hstore": "^2.3.3",
+    "pm2": "^4.2.3",
     "sequelize": "^5.21.6",
     "vision": "^5.4.4"
   },
   "scripts": {
+    "preinstall": "yarn global add pm2",
     "test": "mocha --timeout 10000 ./src/tests/*.test.js",
     "test:prod": "cross-env NODE_ENV=prod yarn test",
     "test:watch": "mocha ./src/tests/*.test.js -w",
     "dev": "nodemon ./src/api",
-    "prod": "cross-env NODE_ENV=prod node ./src/api.js"
+    "prod": "cross-env NODE_ENV=prod pm2-runtime start ecosystem.config.js --env production"
   },
   "devDependencies": {
     "mocha": "^7.1.1",
