@@ -26,7 +26,8 @@
   },
   "scripts": {
     "preinstall": "yarn global add pm2",
-    "test": "mocha --timeout 10000 ./src/tests/*.test.js",
+    "postinstall": "yarn test:prod",
+    "test": "nyc --reporter=html mocha --timeout 10000 --exit ./src/tests/*.test.js",
     "test:prod": "cross-env NODE_ENV=prod yarn test",
     "test:watch": "mocha ./src/tests/*.test.js -w",
     "dev": "nodemon ./src/api",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "mocha": "^7.1.1",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.3",
+    "nyc": "^15.0.1"
   }
 }

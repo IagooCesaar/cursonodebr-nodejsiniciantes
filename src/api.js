@@ -26,6 +26,7 @@ const Context = require("./db/strategies/base/contextStrategy");
 
 const HeroRoutes = require("./routes/heroRoutes");
 const AuthRoutes = require("./routes/authRoutes");
+const UtilRoutes = require("./routes/utilRoutes");
 
 const jwtSecret = process.env.JWT_KEY;
 
@@ -87,6 +88,7 @@ async function main() {
   app.route([
     ...mapRoutes(new HeroRoutes(contextMongo), HeroRoutes.methods()),
     ...mapRoutes(new AuthRoutes(jwtSecret, contextPG), AuthRoutes.methods()),
+    ...mapRoutes(new UtilRoutes(), UtilRoutes.methods()),
   ]);
 
   await app.start();
