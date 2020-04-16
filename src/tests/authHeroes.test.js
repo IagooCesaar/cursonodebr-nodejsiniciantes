@@ -34,7 +34,7 @@ describe("## Suíte de teste de autenticação", function () {
 
     const statusCode = result.statusCode;
     const dados = JSON.parse(result.payload);
-    console.log("Token válido ==> ", dados);
+    // console.log("Token válido ==> ", dados);
 
     assert.deepEqual(statusCode, 200);
   });

@@ -10,11 +10,15 @@ class Postgres extends ICrud {
   }
 
   static async connect() {
-    const connection = new Sequelize("heroes", "sysdba", "masterkey", {
+    const connection = new Sequelize(process.env.POSTGRES_URL, {
       host: "localhost",
-      dialect: "postgres",
+      // dialect: "postgres",
       quoteIdentifiers: false,
       // operatorsAliases: false,
+      ssl: process.env.SSL_DB,
+      dialectOptions: {
+        ssl: process.env.SSL_DB,
+      },
       logging: false,
     });
     return connection;

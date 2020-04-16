@@ -12,7 +12,7 @@ class MongoDB extends ICrud {
 
   static connect() {
     mongoose.connect(
-      "mongodb://admin:admin@localhost:27017/herois?authSource=admin&readPreference=primary",
+      process.env.MONGODB_URL,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

@@ -27,22 +27,31 @@ const headers = {
 };
 
 describe("## Suíte de testes da API Heroes", function () {
+  this.timeout(Infinity);
+
   this.beforeAll(async () => {
     app = await api;
+    console.log("Instaciado o app ...");
+
     await app.inject({
       headers,
       method: "POST",
       url: "/herois",
       payload: MOCK_HEROI_GAVIAO,
     });
+    console.log("Cadastrado MOCK_HEROI_GAVIAO ...");
+
     const result = await app.inject({
       headers,
       method: "POST",
       url: "/herois",
       payload: MOCK_HEROI_INICIAL,
     });
+    console.log("Cadastrado MOCK_HEROI_INICIAL ...");
+
     const dados = JSON.parse(result.payload);
     MOCK_ID = dados._id;
+    console.log("Retornado ID válido do MOCK_HEROI_INICIAL ...");
   });
 
   it("Deverá listar os heróis cadastrados", async () => {
