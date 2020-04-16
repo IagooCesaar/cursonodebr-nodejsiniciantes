@@ -1,4 +1,5 @@
 const boom = require("boom");
+const Joi = require("joi");
 const BaseRoutes = require("./base/baseRoute");
 
 class HeroRoutes extends BaseRoutes {
@@ -11,19 +12,35 @@ class HeroRoutes extends BaseRoutes {
     return {
       path: "/herois",
       method: "GET",
+      config: {
+        validate: {
+          /*
+           *payload -> body
+           *headers -> header
+           *params -> na url/:id/...
+           *query -> ?skip=0?limit=10
+           */
+          failAction: (request, headers, error) => {
+            throw error;
+          },
+          query: {
+            skip: Joi.number().integer().default(0),
+            limit: Joi.number().integer().default(10),
+            nome: Joi.string().min(3).max(100),
+          },
+        },
+      },
       handler: (request, headers) => {
         try {
           const { nome, skip, limit } = request.query;
 
-          let query = {};
-          if (nome) {
-            query.nome = nome;
-          }
-          if (isNaN(limit) && limit !== undefined)
-            throw Error("LIMITE-INVALIDO");
-          if (isNaN(skip) && skip !== undefined) throw Error("PULAR-INVALIDO");
+          const query = nome
+            ? {
+                nome: { $regex: `.*${nome}*.` },
+              }
+            : {};
 
-          return this.db.read(query, parseInt(skip), parseInt(limit));
+          return this.db.read(query, skip, limit);
         } catch (error) {
           console.log("Deu RUIM", error);
           switch (error.message) {
