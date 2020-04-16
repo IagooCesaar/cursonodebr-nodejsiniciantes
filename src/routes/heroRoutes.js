@@ -44,7 +44,6 @@ class HeroRoutes extends BaseRoutes {
 
           return this.db.read(query, skip, limit);
         } catch (error) {
-          console.error("Deu RUIM", error);
           switch (error.message) {
             case "LIMITE-INVALIDO":
               throw boom.badRequest(
@@ -55,9 +54,8 @@ class HeroRoutes extends BaseRoutes {
                 "O valor informado para o skip não é um número válido"
               );
             default:
-              throw boom.badImplementation(error);
+              throw boom.internal(error);
           }
-          return headers.response("Erro interno no servidor").code(500);
         }
       },
     };
@@ -83,8 +81,7 @@ class HeroRoutes extends BaseRoutes {
 
           return { message: "Heroi cadastrado com sucesso", _id: result._id };
         } catch (error) {
-          console.error("Deu RUIM ==> ", error);
-          throw boom.badImplementation("Internal error");
+          throw boom.internal(error.message);
         }
       },
     };
@@ -110,13 +107,11 @@ class HeroRoutes extends BaseRoutes {
         try {
           const { id } = request.params;
           const { payload } = request;
-          console.log("Payload ==> ", payload);
           const dados = JSON.parse(JSON.stringify(payload));
 
           const result = await this.db.update(id, dados);
-          console.log("Result", result);
           if (result.nModified !== 1)
-            return boom.expectationFailed(
+            return boom.preconditionRequired(
               "Não foi possível atualizar o cadastro de ID informado"
             );
 
@@ -124,8 +119,38 @@ class HeroRoutes extends BaseRoutes {
             message: "Heroi atualizado com sucesso",
           };
         } catch (error) {
-          console.error("Deu RUIM", error);
-          return boom.badImplementation("Internal error");
+          return boom.internal("Internal error");
+        }
+      },
+    };
+  }
+
+  delete() {
+    return {
+      path: "/herois/{id}",
+      method: "DELETE",
+      config: {
+        validate: {
+          failAction,
+          params: {
+            id: Joi.string().required(),
+          },
+        },
+      },
+      handler: async (req, h) => {
+        try {
+          const { id } = req.params;
+          const result = await this.db.delete(id);
+          if (result.n !== 1)
+            return boom.preconditionRequired(
+              "Não foi possível remover o cadastro de ID informado"
+            );
+
+          return {
+            message: "Heroi removido com sucesso",
+          };
+        } catch (error) {
+          return boom.internal("Internal error");
         }
       },
     };

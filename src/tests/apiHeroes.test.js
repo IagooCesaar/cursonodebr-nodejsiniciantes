@@ -119,13 +119,56 @@ describe.only("## Suíte de testes da API Heroes", function () {
       payload: expected,
     });
     const dados = JSON.parse(result.payload);
-    console.log("Retorno da atualização => ", dados);
-    console.log("Status code ==> " + result.statusCode);
-    console.log("Message  ==> ", dados.message);
-    assert.ok(result.statusCode === 417);
-    assert.deepEqual(
-      dados.message,
-      "Não foi possível atualizar o cadastro de ID informado"
-    );
+    const expectedError = {
+      statusCode: 428,
+      error: "Precondition Required",
+      message: "Não foi possível atualizar o cadastro de ID informado",
+    };
+    assert.ok(result.statusCode === 428);
+    assert.deepEqual(dados, expectedError);
+  });
+
+  it("Deverá apagar o cadastro de um herói", async () => {
+    const result = await app.inject({
+      method: "DELETE",
+      url: `/herois/${MOCK_ID}`,
+    });
+
+    const dados = JSON.parse(result.payload);
+
+    assert.ok(result.statusCode === 200);
+    assert.deepEqual(dados.message, "Heroi removido com sucesso");
+  });
+
+  it("Não deverá apagar o cadastro de um herói com ID incorreto", async () => {
+    const result = await app.inject({
+      method: "DELETE",
+      url: "/herois/5e94d2f78da4c306447c707d",
+    });
+
+    const dados = JSON.parse(result.payload);
+    const expectedError = {
+      statusCode: 428,
+      error: "Precondition Required",
+      message: "Não foi possível remover o cadastro de ID informado",
+    };
+
+    assert.deepEqual(dados, expectedError);
+  });
+
+  it("Não deverá apagar o cadastro de um herói com ID inválido", async () => {
+    const result = await app.inject({
+      method: "DELETE",
+      url: "/herois/ID_INVALIDO",
+    });
+
+    const dados = JSON.parse(result.payload);
+    const expectedError = {
+      statusCode: 500,
+      error: "Internal Server Error",
+      message: "An internal server error occurred",
+    };
+
+    assert.deepEqual(dados, expectedError);
   });
 });
