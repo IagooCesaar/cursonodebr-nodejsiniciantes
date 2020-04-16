@@ -44,7 +44,7 @@ class HeroRoutes extends BaseRoutes {
 
           return this.db.read(query, skip, limit);
         } catch (error) {
-          console.log("Deu RUIM", error);
+          console.error("Deu RUIM", error);
           switch (error.message) {
             case "LIMITE-INVALIDO":
               throw boom.badRequest(
@@ -80,11 +80,52 @@ class HeroRoutes extends BaseRoutes {
         try {
           const { nome, poder } = request.payload;
           const result = await this.db.create({ nome, poder });
-          console.log("Result", result);
-          return { message: "Heroi cadastrado com sucesso" };
+
+          return { message: "Heroi cadastrado com sucesso", _id: result._id };
         } catch (error) {
-          console.log("Deu RUIM ==> ", error);
+          console.error("Deu RUIM ==> ", error);
           throw boom.badImplementation("Internal error");
+        }
+      },
+    };
+  }
+
+  update() {
+    return {
+      path: "/herois/{id}",
+      method: "PATCH",
+      config: {
+        validate: {
+          failAction,
+          params: {
+            id: Joi.string().required(),
+          },
+          payload: {
+            nome: Joi.string().min(3).max(100),
+            poder: Joi.string().min(3).max(30),
+          },
+        },
+      },
+      handler: async (request, headers) => {
+        try {
+          const { id } = request.params;
+          const { payload } = request;
+          console.log("Payload ==> ", payload);
+          const dados = JSON.parse(JSON.stringify(payload));
+
+          const result = await this.db.update(id, dados);
+          console.log("Result", result);
+          if (result.nModified !== 1)
+            return boom.expectationFailed(
+              "Não foi possível atualizar o cadastro de ID informado"
+            );
+
+          return {
+            message: "Heroi atualizado com sucesso",
+          };
+        } catch (error) {
+          console.error("Deu RUIM", error);
+          return boom.badImplementation("Internal error");
         }
       },
     };
