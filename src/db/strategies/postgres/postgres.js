@@ -14,7 +14,7 @@ class Postgres extends ICrud {
       host: "localhost",
       dialect: "postgres",
       quoteIdentifiers: false,
-      operatorsAliases: false,
+      // operatorsAliases: false,
       logging: false,
     });
     return connection;
@@ -47,8 +47,9 @@ class Postgres extends ICrud {
     return result;
   }
 
-  async update(id, item) {
-    return await this._schema.update(item, {
+  async update(id, item, upsert = false) {
+    const fn = upsert ? "upsert" : "update";
+    return await this._schema[fn](item, {
       where: {
         id: id,
       },

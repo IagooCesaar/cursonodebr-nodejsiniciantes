@@ -1,8 +1,10 @@
 // yarn add jsonwebtoken
 const boom = require("boom");
 const Joi = require("joi");
-const BaseRoutes = require("./base/baseRoute");
 const jwt = require("jsonwebtoken");
+
+const BaseRoutes = require("./base/baseRoute");
+const PasswordHelper = require("../helpers/passwordHelper");
 
 const failAction = (request, headers, error) => {
   throw error;
@@ -14,10 +16,12 @@ const ValidUser = {
 };
 
 class AuthRoutes extends BaseRoutes {
-  constructor(criptoKey) {
+  constructor(criptoKey, db) {
     super();
     this.criptoKey = criptoKey;
+    this.db = db;
   }
+
   login() {
     return {
       method: "POST",
@@ -38,18 +42,35 @@ class AuthRoutes extends BaseRoutes {
       handler: async (req, h) => {
         try {
           const { username, password } = req.payload;
-          if (
-            username.toLowerCase() !== ValidUser.username ||
-            password !== ValidUser.password
-          ) {
+          // if (
+          //   username.toLowerCase() !== ValidUser.username ||
+          //   password !== ValidUser.password
+          // ) {
+          //   return boom.unauthorized(
+          //     "O usuário e senha fornecido são iválidos"
+          //   );
+          // }
+          const [usuario] = await this.db.read({
+            username: username.toLowerCase(),
+          });
+          if (!usuario)
             return boom.unauthorized(
-              "O usuário e senha fornecido são iválidos"
+              "Não foi possível encontrar um usuário com os dados fornecidos"
             );
-          }
+          const matchPwd = await PasswordHelper.comparePassword(
+            password,
+            usuario.password
+          );
+
+          if (!matchPwd)
+            return boom.unauthorized(
+              "O usuário ou a senha informada não confere"
+            );
+
           const token = jwt.sign(
             {
-              username: username,
-              id: 0,
+              username: usuario.username,
+              id: usuario.id,
             },
             this.criptoKey
           );

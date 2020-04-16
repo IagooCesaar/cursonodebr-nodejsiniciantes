@@ -1,13 +1,17 @@
 // yarn add vision inert hapi-swagger@9.1.3
 
 const Hapi = require("hapi");
-const MongoDB = require("./db/strategies/mongodb/mongodb");
 const HapiSwagger = require("hapi-swagger");
 const Vision = require("vision");
 const Inert = require("inert");
 const HapiJwt = require("hapi-auth-jwt2");
 
+const MongoDB = require("./db/strategies/mongodb/mongodb");
+const Postgres = require("./db/strategies/postgres/postgres");
+
 const HeroiSchema = require("./db/strategies/mongodb/schemas");
+const UsuarioSchema = require("./db/strategies/postgres/schemas/usuarioSchema");
+
 const Context = require("./db/strategies/base/contextStrategy");
 
 const HeroRoutes = require("./routes/heroRoutes");
@@ -25,8 +29,12 @@ function mapRoutes(instance, methods) {
 }
 
 async function main() {
-  const connection = MongoDB.connect();
-  const context = new Context(new MongoDB(connection, HeroiSchema));
+  const connMongo = await MongoDB.connect();
+  const contextMongo = new Context(new MongoDB(connMongo, HeroiSchema));
+
+  const connPG = await Postgres.connect();
+  const modelUsuario = await Postgres.defineModel(connPG, UsuarioSchema);
+  const contextPG = new Context(new Postgres(connPG, modelUsuario));
 
   const swaggerOptions = {
     info: {
@@ -50,17 +58,25 @@ async function main() {
     // options: {
     //   expiresIn: 20,
     // },
-    validate: (dados, request) => {
+    validate: async (dados, request) => {
       //verifica se usuário está ativo
       //verifica se está válido
+      const [result] = await contextPG.read({
+        username: dados.username.toLowerCase(),
+        id: dados.id,
+      });
+      if (!result)
+        return {
+          isValid: false,
+        };
       return { isValid: true };
     },
   });
   app.auth.default("jwt");
 
   app.route([
-    ...mapRoutes(new HeroRoutes(context), HeroRoutes.methods()),
-    ...mapRoutes(new AuthRoutes(jwtSecret), AuthRoutes.methods()),
+    ...mapRoutes(new HeroRoutes(contextMongo), HeroRoutes.methods()),
+    ...mapRoutes(new AuthRoutes(jwtSecret, contextPG), AuthRoutes.methods()),
   ]);
 
   await app.start();

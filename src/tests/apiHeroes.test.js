@@ -20,13 +20,13 @@ const MOCK_HEROI_INICIAL = {
 let MOCK_ID = "";
 
 const validToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzdWFyaW9AdGVzdGUuY29tLmJyIiwiaWQiOjAsImlhdCI6MTU4Njg4NDQzMH0.wxPfiLCpmK83kySVbODMNpF2Azw6OqbN9rQBhYVGCyo";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzdWFyaW9AdGVzdGUuY29tLmJyIiwiaWQiOjEsImlhdCI6MTU4Njk1MzgxNH0.q_RRiLN2xPC-K4NzIgN3WxSbAHnawWqCTpZtc7G2phA";
 
 const headers = {
   authorization: validToken,
 };
 
-describe.only("## Suíte de testes da API Heroes", function () {
+describe("## Suíte de testes da API Heroes", function () {
   this.beforeAll(async () => {
     app = await api;
     await app.inject({
