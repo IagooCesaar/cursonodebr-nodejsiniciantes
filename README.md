@@ -1,6 +1,8 @@
 # Repositório do projeto criado durante o curso Node.js para Iniciantes do [#NodeBR](https://nodebr.org/)
 
-Link do curso: https://treinamento.nodebr.org/?origin=CursoErickWendel
+- Link do curso: https://treinamento.nodebr.org/?origin=CursoErickWendel
+- Link da documentação gerado pelo Swagger: https://cursonodebr-nodejsiniciantes.herokuapp.com/documentation
+- Link do índice de cobertura de testes da API: https://cursonodebr-nodejsiniciantes.herokuapp.com/coverage/
 
 ## Conteúdo as aulas:
 
