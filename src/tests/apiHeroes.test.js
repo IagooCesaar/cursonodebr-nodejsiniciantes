@@ -2,6 +2,11 @@ const assert = require("assert");
 const api = require("../api");
 let app = {};
 
+const MOCK_HEROI_CADASTRAR = {
+  nome: "Superman",
+  poder: "Super Força",
+};
+
 describe.only("## Suíte de testes da API Heroes", function () {
   this.beforeAll(async () => {
     app = await api;
@@ -52,5 +57,17 @@ describe.only("## Suíte de testes da API Heroes", function () {
     const statusCode = result.statusCode;
     assert.deepEqual(statusCode, 200);
     assert.ok(dados.length >= 1);
+  });
+
+  it.only("Cadastrar um novo herói", async () => {
+    const result = await app.inject({
+      method: "POST",
+      url: "/herois",
+      payload: MOCK_HEROI_CADASTRAR,
+    });
+    const { _id } = JSON.parse(result.payload);
+    assert.ok(result.statusCode === 200);
+    // assert.notStrictEqual(_id, undefined);
+    assert.ok((result.payload.message = "Heroi cadastrado com sucesso"));
   });
 });
