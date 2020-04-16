@@ -19,15 +19,24 @@ const MOCK_HEROI_INICIAL = {
 
 let MOCK_ID = "";
 
+const validToken =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzdWFyaW9AdGVzdGUuY29tLmJyIiwiaWQiOjAsImlhdCI6MTU4Njg4NDQzMH0.wxPfiLCpmK83kySVbODMNpF2Azw6OqbN9rQBhYVGCyo";
+
+const headers = {
+  authorization: validToken,
+};
+
 describe.only("## Suíte de testes da API Heroes", function () {
   this.beforeAll(async () => {
     app = await api;
     await app.inject({
+      headers,
       method: "POST",
       url: "/herois",
       payload: MOCK_HEROI_GAVIAO,
     });
     const result = await app.inject({
+      headers,
       method: "POST",
       url: "/herois",
       payload: MOCK_HEROI_INICIAL,
@@ -38,6 +47,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
 
   it("Deverá listar os heróis cadastrados", async () => {
     const result = await app.inject({
+      headers,
       method: "GET",
       url: "/herois",
     });
@@ -51,6 +61,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
   it("Deverá retornar uma lista reduzida de heróis utilizando filtros (no máx 10 itens)", async () => {
     const LIMITE = 10;
     const result = await app.inject({
+      headers,
       method: "GET",
       url: `/herois?skip=0&limit=${LIMITE}`,
     });
@@ -64,6 +75,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
   it("Não deverá retornar heróis por erro interno", async () => {
     const LIMITE = "AAA";
     const result = await app.inject({
+      headers,
       method: "GET",
       url: `/herois?skip=0&limit=${LIMITE}`,
     });
@@ -74,6 +86,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
   it("Deverá retornar Heróis que contenham o nome Gavião Negro", async () => {
     const nome = "Gavião Negro";
     const result = await app.inject({
+      headers,
       method: "GET",
       url: `/herois?skip=0&limit=10&nome=${nome}`,
     });
@@ -85,6 +98,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
 
   it("Cadastrar um novo herói", async () => {
     const result = await app.inject({
+      headers,
       method: "POST",
       url: "/herois",
       payload: MOCK_HEROI_CADASTRAR,
@@ -99,6 +113,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
       poder: "Super pontaria",
     };
     const result = await app.inject({
+      headers,
       method: "PATCH",
       url: `/herois/${MOCK_ID}`,
       payload: expected,
@@ -114,6 +129,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
       poder: "Erro na atualização",
     };
     const result = await app.inject({
+      headers,
       method: "PATCH",
       url: "/herois/5e94d2f78da4c306447c707d",
       payload: expected,
@@ -130,6 +146,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
 
   it("Deverá apagar o cadastro de um herói", async () => {
     const result = await app.inject({
+      headers,
       method: "DELETE",
       url: `/herois/${MOCK_ID}`,
     });
@@ -142,6 +159,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
 
   it("Não deverá apagar o cadastro de um herói com ID incorreto", async () => {
     const result = await app.inject({
+      headers,
       method: "DELETE",
       url: "/herois/5e94d2f78da4c306447c707d",
     });
@@ -158,6 +176,7 @@ describe.only("## Suíte de testes da API Heroes", function () {
 
   it("Não deverá apagar o cadastro de um herói com ID inválido", async () => {
     const result = await app.inject({
+      headers,
       method: "DELETE",
       url: "/herois/ID_INVALIDO",
     });

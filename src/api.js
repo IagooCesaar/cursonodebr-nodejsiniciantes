@@ -2,14 +2,18 @@
 
 const Hapi = require("hapi");
 const MongoDB = require("./db/strategies/mongodb/mongodb");
-const HeroiSchema = require("./db/strategies/mongodb/schemas");
-const Context = require("./db/strategies/base/contextStrategy");
-
 const HapiSwagger = require("hapi-swagger");
 const Vision = require("vision");
 const Inert = require("inert");
+const HapiJwt = require("hapi-auth-jwt2");
+
+const HeroiSchema = require("./db/strategies/mongodb/schemas");
+const Context = require("./db/strategies/base/contextStrategy");
 
 const HeroRoutes = require("./routes/heroRoutes");
+const AuthRoutes = require("./routes/authRoutes");
+
+const jwtSecret = "Minha_Chave_Criptografada";
 
 const app = new Hapi.server({
   port: 5000,
@@ -23,6 +27,7 @@ function mapRoutes(instance, methods) {
 async function main() {
   const connection = MongoDB.connect();
   const context = new Context(new MongoDB(connection, HeroiSchema));
+
   const swaggerOptions = {
     info: {
       title: "API Heróis - #CursoNodeBR",
@@ -31,6 +36,7 @@ async function main() {
     lang: "pt",
   };
   await app.register([
+    HapiJwt,
     Vision,
     Inert,
     {
@@ -39,7 +45,23 @@ async function main() {
     },
   ]);
 
-  app.route(mapRoutes(new HeroRoutes(context), HeroRoutes.methods()));
+  app.auth.strategy("jwt", "jwt", {
+    key: jwtSecret,
+    // options: {
+    //   expiresIn: 20,
+    // },
+    validate: (dados, request) => {
+      //verifica se usuário está ativo
+      //verifica se está válido
+      return { isValid: true };
+    },
+  });
+  app.auth.default("jwt");
+
+  app.route([
+    ...mapRoutes(new HeroRoutes(context), HeroRoutes.methods()),
+    ...mapRoutes(new AuthRoutes(jwtSecret), AuthRoutes.methods()),
+  ]);
 
   await app.start();
   console.log("Servidor rodando na porta " + app.info.port);
