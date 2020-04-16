@@ -62,12 +62,8 @@ class MongoDB extends ICrud {
   async delete(id) {
     let response = null;
     id
-      ? (response = await this._schema.deleteOne({ _id: id }, (err) => {
-          if (err) console.error(`Erro ao deletar item ${id} => `, err);
-        }))
-      : (response = await this._schema.deleteMany({}, (err) => {
-          if (err) console.error("Erro ao deletar muitos => ", err);
-        }));
+      ? (response = await this._schema.deleteOne({ _id: id }))
+      : (response = await this._schema.deleteMany({}));
     return response;
   }
 }

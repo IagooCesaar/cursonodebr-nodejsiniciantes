@@ -1,8 +1,8 @@
 const assert = require("assert");
-const Postgres = require("../db/strategies/postgres");
+const Postgres = require("../db/strategies/postgres/postgres");
 const Context = require("../db/strategies/base/contextStrategy");
+const HeroiSchema = require("../db/strategies/postgres/schemas/heroiSchema");
 
-const context = new Context(new Postgres());
 const MOCK_HEROI_CADASTRAR = {
   nome: "Gavião Negro",
   poder: "flechas",
@@ -13,11 +13,16 @@ const MOCK_HEROI_ATUALIZAR = {
   poder: "Dinheiro",
 };
 
+let context = {};
+
 describe("## Postgres strategy", function () {
   this.timeout(Infinity);
 
   this.beforeAll(async function () {
-    await context.connect();
+    const connection = await Postgres.connect();
+    const model = await Postgres.defineModel(connection, HeroiSchema);
+    context = new Context(new Postgres(connection, model));
+
     await context.delete();
     await context.create(MOCK_HEROI_ATUALIZAR);
   });
@@ -47,7 +52,7 @@ describe("## Postgres strategy", function () {
       ...MOCK_HEROI_ATUALIZAR,
       nome: "Homem Morcego",
     };
-    console.log("Novo item ", novoItem);
+    // console.log("Novo item ", novoItem);
     const [update] = await context.update(itemAtualizar.id, novoItem);
     const [itemAtualizado] = await context.read({ id: itemAtualizar.id });
     assert.deepEqual(update, 1);
