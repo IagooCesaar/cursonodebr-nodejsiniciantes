@@ -1,5 +1,5 @@
 const ContextStrategy = require("./strategies/base/contextStrategy");
-const MongoDB = require("./strategies/mongodb");
+const MongoDB = require("./strategies/mongodb/mongodb");
 const Postgres = require("./strategies/postgres");
 
 const contextMongo = new ContextStrategy(new MongoDB());
